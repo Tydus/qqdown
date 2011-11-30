@@ -1,0 +1,41 @@
+#!/usr/bin/python
+
+import sys
+import os
+import random
+import subprocess
+import json
+
+def prompt(*args):
+    for i in args:
+        print i,
+    print
+
+try:
+    open("cookie").close()
+except Exception:
+    print "Please login first"
+    exit(-1)
+
+prompt("List task")
+
+CURL=['curl','-b','cookie','http://lixian.qq.com/handler/xfjson.php?cmd=get_task_status&r='+str(random.random())]
+
+proc=subprocess.Popen(CURL,stdout=subprocess.PIPE)
+(out,err)=proc.communicate()
+if err:
+    print "Error:"+err
+    exit(-1)
+
+out=json.loads(out[len('try{callback('):-len(");}catch(e){}")])
+if out['result']:
+    print out
+    exit(-1)
+out=out['data']
+for i in out:
+    if i['dl_status']!='12':
+        print i
+        print
+
+
+prompt("Done")

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+    echo "Add task"
+    echo "$0 URL"
+    exit
+fi
+
+DOWNURL=$1
+
+function prompt {
+    echo "$@"
+}
+
+if [ ! -f cookie ]; then
+    echo "Please login first"
+    exit -1
+fi
+prompt "Add Task"
+ADDURL="http://lixian.qq.com/handler/xfjson.php"
+
+DOWNFN=`echo ${DOWNURL} | awk -F/ '{printf "%s\n",(NF==3||$NF==""?"index.html":$NF)}'`
+ADDRES=`curl -b cookie ${ADDURL} -d "cmd=add_task" -d "r=0.${RANDOM}" -d "fs=0" --data-urlencode "url=${DOWNURL}" --data-urlencode "fn=${DOWNFN}" -s`
+if ! echo ${ADDRES} | grep '"result":0'; then
+    echo ${ADDRES}
+    exit -1
+fi
+
+prompt "Done"
