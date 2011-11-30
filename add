@@ -16,13 +16,18 @@ if [ ! -f cookie ]; then
     echo "Please login first"
     exit -1
 fi
+
 prompt "Add Task"
 ADDURL="http://lixian.qq.com/handler/xfjson.php"
 
-DOWNFN=`echo ${DOWNURL} | awk -F/ '{printf "%s\n",(NF==3||$NF==""?"index.html":$NF)}'`
-ADDRES=`curl -b cookie ${ADDURL} -d "cmd=add_task" -d "r=0.${RANDOM}" -d "fs=0" --data-urlencode "url=${DOWNURL}" --data-urlencode "fn=${DOWNFN}" -s`
-if ! echo ${ADDRES} | grep '"result":0'; then
-    echo ${ADDRES}
+if echo "${DOWNURL}" | grep -q "^ed2k:" ; then
+    DOWNFN=`echo ${DOWNURL} | awk -F"|" '{printf "%s",$3}'`
+else
+    DOWNFN=`echo ${DOWNURL} | awk -F/ '{printf "%s\n",(NF==3||$NF==""?"index.html":$NF)}'`
+fi
+ADDRES=`curl -b cookie ${ADDURL} -d "cmd=add_task" -d "r=0.${RANDOM}" -d "fs=0" --data-urlencode "url=${DOWNURL}" -d "fn=${DOWNFN}" -s`
+if ! echo "${ADDRES}" | grep -q '"result":0'; then
+    echo "${ADDRES}"
     exit -1
 fi
 
