@@ -1,6 +1,0 @@
-#!/bin/bash
-
-LOGOUTURL="http://lixian.qq.com/index.php?cmd=logout"
-LOGINRES=`curl -b cookie ${LOGOUTURL} -s -I`
-
-rm -f cookie
