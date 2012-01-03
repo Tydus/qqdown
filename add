@@ -27,8 +27,8 @@ else
 fi
 ADDRES=`curl -b cookie ${ADDURL} -d "cmd=add_task" -d "r=0.${RANDOM}" -d "fs=0" --data-urlencode "url=${DOWNURL}" -d "fn=${DOWNFN}" -s`
 if ! echo "${ADDRES}" | grep -q '"result":0'; then
-    echo "${ADDRES}"
+    echo "Error while adding ${DOWNFN}: ${ADDRES}"
     exit -1
 fi
 
-prompt "Done"
+prompt "${DOWNFN} added"

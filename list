@@ -19,7 +19,7 @@ except Exception:
 
 prompt("List task")
 
-CURL=['curl','-b','cookie','http://lixian.qq.com/handler/xfjson.php?cmd=get_task_status&r='+str(random.random())]
+CURL=['curl','-s','-b','cookie','http://lixian.qq.com/handler/xfjson.php?cmd=get_task_status&r='+str(random.random())]
 
 proc=subprocess.Popen(CURL,stdout=subprocess.PIPE)
 (out,err)=proc.communicate()
@@ -37,5 +37,3 @@ for i in out:
         print i
         print
 
-
-prompt("Done")
