@@ -65,7 +65,7 @@ class Json_RPC(object):
 
             if kwe.multipart:
                 # TODO: Handle multipart here
-                raise NotImplemented()
+                raise NotImplemented
                 data=None
             else:
                 data=urlencode(kwe.data)
