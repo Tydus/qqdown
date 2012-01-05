@@ -11,8 +11,8 @@ class QQDownException(Exception): pass
 
 class QQDown(qqweb.QQWeb):
     @staticmethod
-    def join_mid(mid):
-        return reduce(lambda a,x:a+str(x)+"n",mid,"")[:-1] if isinstance(mid,list) else mid
+    def join(lst,separator):
+        return reduce(lambda a,x:a+str(x)+separator,lst,"")[:-len(separator)] if isinstance(lst,list) else lst
 
     def qqdown_rpc(self,url,method="GET",**kwargs):
         '''
@@ -60,7 +60,7 @@ class QQDown(qqweb.QQWeb):
         return self.qqdown_rpc(XFJSON_URL,query=dict(
             cmd='get_task_status',
             r=random(),
-            cids=QQDown.join_mid(cur_ids)
+            cids=QQDown.join(cur_ids,'n')
             ))
         '''
 
@@ -68,7 +68,7 @@ class QQDown(qqweb.QQWeb):
         data=dict(
                 cmd ='del_task',
                 r   =random(),
-                tids=QQDown.join_mid(mid)
+                tids=QQDown.join(mid,'n')
                 )
         return self.qqdown_rpc(XFJSON_URL,"POST",data=data)
 
