@@ -13,8 +13,6 @@ class Json_RPC(object):
                 #urllib2.HTTPHandler(debuglevel=1),
                 #urllib2.HTTPSHandler(debuglevel=1),
                 )
-        #self.__cookie_jar=CookieJar()
-        #self.__opener=urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookie_jar))
 
     def json_rpc(self,url,method="GET",**kwargs):
         '''
@@ -67,6 +65,7 @@ class Json_RPC(object):
 
             if kwe.multipart:
                 # TODO: Handle multipart here
+                raise NotImplemented()
                 data=None
             else:
                 data=urlencode(kwe.data)
@@ -83,4 +82,6 @@ class Json_RPC(object):
 
         #print "\033[33m"+str(self.cookie_jar)+"\033[0m"
 
-        return response.read()
+        ret=response.read()
+        response.close()
+        return ret
