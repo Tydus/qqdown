@@ -15,11 +15,14 @@ def prompt_for_verifycode(vc):
     return raw_input()
 
 class QQWeb(json_rpc.Json_RPC):
-    def __init__(self,username,password,is_pass_md53=False):
+    def __init__(self,username,password,is_pass_md53=False,nologin=False):
         self.username=username
         json_rpc.Json_RPC.__init__(self)
         if not is_pass_md53:
             password=md5_3(password)
+
+        if nologin:
+            return
         
         appid=567008010
         # Get Verify Code

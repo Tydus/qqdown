@@ -27,11 +27,13 @@ class QQDown(qqweb.QQWeb):
         '''
         ret=self.json_rpc(url,method,**kwargs)[1]
         if ret['result']!=0:
-            raise QQDownException(ret['err_msg'])
+            if ret.has_key('errmsg'):
+                raise QQDownException(ret['errmsg'])
+            elif ret.has_key('err_msg'):
+                raise QQDownException(ret['err_msg'][0])
+            else:
+                raise QQDownException("Unknown Error")
         return ret['data']
-
-    def __init__(self,username,password,is_pass_md53=False):
-        qqweb.QQWeb.__init__(self,username,password,is_pass_md53)
 
     def add_task(self,fileurl,filename="",filesize=0):
         ''' Add Task for URL '''

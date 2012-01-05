@@ -5,6 +5,7 @@
 from common import *
 from urllib2 import Request
 from mimetypes import guess_type
+from cookielib import MozillaCookieJar
 
 def multipart_encode(data,files):
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
@@ -31,12 +32,21 @@ def multipart_encode(data,files):
 
 class Json_RPC(object):
     def __init__(self):
-        self.cookie_jar=CookieJar()
+        #self.cookie_jar=CookieJar()
+        self.cookie_jar=MozillaCookieJar()
         self.opener=urllib2.build_opener(
                 urllib2.HTTPCookieProcessor(self.cookie_jar),
                 #urllib2.HTTPHandler(debuglevel=1),
                 #urllib2.HTTPSHandler(debuglevel=1),
                 )
+
+    def load_cookie(self,filename):
+        ''' Load Cookie from file '''
+        self.cookie_jar.load(filename,ignore_discard=True)
+
+    def save_cookie(self,filename):
+        ''' Save Cookie to file '''
+        self.cookie_jar.save(filename,ignore_discard=True)
 
     def json_rpc(self,url,method="GET",**kwargs):
         '''
