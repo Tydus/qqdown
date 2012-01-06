@@ -120,18 +120,25 @@ class QQDown(qqweb.QQWeb):
             raise QQDownException(info_web['msg'])
         del info_web['ret']
 
-        l_local=info_local['files']
-        l_web=info_web['files']
 
-        # Fix path based on local parse result
-        for i in l_web:
-            ind=i['file_index']
-            if l_local[ind].has_key('path.utf-8'):
-                i['file_name']='\\'.join(l_local[ind]['path.utf-8']).decode('utf-8')
-            elif info_local.has_key('encoding'):
-                i['file_name']='\\'.join(l_local[ind]['path']).decode(info_local['encoding'])
-            else:
-                i['file_name']='\\'.join(l_local[ind]['path']).decode('utf-8')
+        if info_local.has_key('files'):
+            # This torrent is a multi-file one
+            l_local=info_local['files']
+            l_web=info_web['files']
+
+            # Fix path based on local parse result
+            for i in l_web:
+                ind=i['file_index']
+                if l_local[ind].has_key('path.utf-8'):
+                    i['file_name']='\\'.join(l_local[ind]['path.utf-8']).decode('utf-8')
+                elif info_local.has_key('encoding'):
+                    i['file_name']='\\'.join(l_local[ind]['path']).decode(info_local['encoding'])
+                else:
+                    i['file_name']='\\'.join(l_local[ind]['path']).decode('utf-8')
+        else:
+            # This torrent only contains a single file
+            # We don't need to fix it because it doesn't contains a dir
+            pass
 
         return info_web
 
