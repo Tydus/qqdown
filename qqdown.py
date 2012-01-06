@@ -109,12 +109,12 @@ class QQDown(qqweb.QQWeb):
 
         '''
 
+        info_local=bdecode(torrent)['info']
         info_web=self.json_rpc(
                 'http://lixian.qq.com/handler/bt_handler.php?cmd=readinfo',
                 'POST',
                 file=[('myfile','a.torrent',torrent)]
                 )
-        info_local=bdecode(torrent)['info']
 
         if info_web['ret']!=0:
             raise QQDownException(info_web['msg'])
