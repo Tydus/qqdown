@@ -19,13 +19,13 @@
 
 import json_rpc
 from random import random
+from hashlib import md5
+from string import upper
 
 class QQLoginException(Exception): pass
 
 def md5_3(a):
     ''' Performs an 3-time MD5 (md5_3 as Tencent spec) '''
-    from hashlib import md5
-    from string import upper
     a=md5(a).digest()
     a=md5(a).digest()
     return upper(md5(a).hexdigest())
