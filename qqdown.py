@@ -61,10 +61,10 @@ class QQDown(qqweb.QQWeb):
                 cmd='add_bt_task',
                 r=random(),
                 hash=info_web['hash'],
-                taskname=info_web['name'],
+                taskname=info_web['name'].encode('utf-8'),
                 index=join_component(info_web['files'],'#','file_index'),
                 filesize=join_component(info_web['files'],'#','file_size_ori'),
-                filename=join_component(info_web['files'],'#','file_name'),
+                filename=join_component(info_web['files'],'#','file_name').encode('utf-8'),
                 )
 
         return self.qqdown_rpc(XFJSON_URL,"POST",data=data)
@@ -171,7 +171,7 @@ def get_torrent_from_url(url):
     return ret
 
 def join(lst,separator):
-    return separator.join(map(lambda x:str(x),lst))
+    return separator.join(map(lambda x:unicode(x),lst))
 def join_component(lst,separator,component):
-    return separator.join(map(lambda x:str(x[component]),lst))
+    return separator.join(map(lambda x:unicode(x[component]),lst))
 
