@@ -45,8 +45,10 @@ class QQDown(qqweb.QQWeb):
         ['errcode':'0','result':0,'id':'1234567']
         '''
         ret=self.json_rpc(url,method,**kwargs)[1]
-        if ret['result']!=0:
+        if ret.has_key('result') and ret['result']!=0:
             raise QQDownException({'desc':error_desc[ret['result']],'raw':ret})
+        if ret.has_key('status') and ret['status']!=0:
+            raise QQDownException({'desc':ret['status'],'raw':ret})
         return ret['data']
 
     def add_task(self,fileurl,filename="",filesize=0):
@@ -170,9 +172,15 @@ class QQDown(qqweb.QQWeb):
                 )
         return self.qqdown_rpc(XFJSON_URL,"POST",data=data)
 
-    def get_http_url(self,mid):
-        ''' Get HTTP Download URL by id '''
-        raise NotImplemented()
+    def get_http_url(self,hash):
+        ''' Get HTTP Download URL by hash '''
+        data=dict(
+                hash=hash,
+                callback="callback"
+                )
+        return self.qqdown_rpc('http://lixian.qq.com/handler/get_http_url.php',
+                query=data
+                )
 
     def __repr__(self):
         return "<qqdown.QQDown object with user '%s'>"%self.username
