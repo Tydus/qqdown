@@ -68,7 +68,16 @@ class QQDown(qqweb.QQWeb):
         return ret['data']
 
     def add_task(self,fileurl,filename="",filesize=0):
-        ''' Add Task for URL '''
+        '''
+        Add Task according to a URL
+        
+        Return a list like:
+        [{u'SHA': u'2446c16c6176e9f9f717eefdfc62559f297be940',
+          u'file_name': u'dfsa',
+          u'file_url': u'aHR0cDovL3d3dy5iYWlkdS5jb20vZGZzYQ==',
+          u'id': u'1629381383632120927'}]
+        
+        '''
 
         # Guess filename
         if filename=="":
@@ -85,6 +94,16 @@ class QQDown(qqweb.QQWeb):
     def add_bt_task(self,info_web):
         '''
         Actually submit bt task
+
+        Return a list like:
+        [{u'bt_id': u'd6c8299a4db8e922b02da9b4acbfc4739e6ab8df_0',
+          u'file_name': u'tmp1\\\\tmp2\\\\b.txt',
+          u'file_size': u'7',
+          u'id': u'1629381383632121173'},
+         {u'bt_id': u'd6c8299a4db8e922b02da9b4acbfc4739e6ab8df_1',
+          u'file_name': u'tmp1\\\\a.txt',
+          u'file_size': u'0',
+          u'id': u'1629381383634713173'}]
         
         See also: read_torrent
 
@@ -164,7 +183,39 @@ class QQDown(qqweb.QQWeb):
         return self.add_bt_task(self.read_torrent(torrent))
 
     def get_task_list(self):
-        ''' Get List of task status '''
+        '''
+        Get List of task status
+        
+        Return a list like:
+        [{u'acc_cookie': None,
+          u'acc_url': '',
+          u'addtime': u'1325851661',
+          u'comp_size': u'6759',
+          u'dl_status': u'12',
+          u'file_name': u'index.html',
+          u'file_size': u'6759',
+          u'file_url': u'aHR0cDovL3d3dy5iYWlkdS5jb20vaW5kZXguaHRtbA==',
+          u'hash': u'B91378AFE2E92401E2839E8A7FC65ABA1F055448',
+          u'id': u'1629381383632118795',
+          u'left_time': u'1040184'},
+         {u'acc_cookie': None,
+          u'acc_url': '',
+          u'addtime': u'1325851831',
+          u'bt_id': u'D6C8299A4DB8E922B02DA9B4ACBFC4739E6AB8DF_0',
+          u'comp_size': u'0',
+          u'dl_status': u'6',
+          u'file_name': u'tmp1\\\\tmp2\\\\b.txt',
+          u'file_size': u'7',
+          u'file_url': u'aHR0cDovLzE5Mi4xNjguMS4yMzMvPyYmdHhmX2ZpZD0=',
+          u'hash': '',
+          u'id': u'1629381383632118967',
+          u'left_time': u'1040400',
+          u'link_type': u'BT'}]
+
+        Go ahead and filter out the data you needed
+        
+        '''
+
         return self.qqdown_rpc(XFJSON_URL,query=dict(cmd='get_task_list',r=random()))
 
     def get_task_status(self,cur_ids):
@@ -179,7 +230,14 @@ class QQDown(qqweb.QQWeb):
         '''
 
     def del_task(self,mid):
-        ''' Delete a or a list of task by id '''
+        '''
+        Delete a or a list of task by id
+        
+        Return a list like:
+        [{u'errcode': u'0', u'id': u'1629381383632120927', u'result': u'0'},
+         {u'errcode': u'0', u'id': u'1629381383632118967', u'result': u'0'}]
+            
+        '''
         data=dict(
                 cmd ='del_task',
                 r   =random(),
@@ -188,7 +246,14 @@ class QQDown(qqweb.QQWeb):
         return self.qqdown_rpc(XFJSON_URL,"POST",data=data)
 
     def get_http_url(self,hash):
-        ''' Get HTTP Download URL by hash '''
+        '''
+        Get HTTP Download URL by hash
+
+        Return a dict like:
+        {u'cookie': u'75000578',
+         u'url': u'http://xfwb.store.qq.com:443/?.....'}
+
+        '''
         data=dict(
                 hash=hash,
                 callback="callback"
