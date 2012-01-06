@@ -56,7 +56,6 @@ class QQWeb(json_rpc.Json_RPC):
                          )
         verifycode=ret[2]
         if ret[1]=='1':
-            # TODO: Process Captcha Here
             ret=self.http_rpc("http://captcha.qq.com/getimage",
                               query=dict(uin=username,
                                       aid=appid,
@@ -84,7 +83,7 @@ class QQWeb(json_rpc.Json_RPC):
                          )
         if ret[1]!='0':
             # Login Failed
-            raise QQLoginException(ret[5])
+            raise QQLoginException((ret[1],ret[5]))
 
     def __repr__(self):
         return "<qqweb.QQWeb object with user '%s'>"%self.username
