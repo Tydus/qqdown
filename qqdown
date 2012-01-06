@@ -1,0 +1,134 @@
+#!/usr/bin/python
+#QQDown -- An open-sourced implementation of tencent offline download
+#Copyright (C) 2011-2012 Tydus <Tydus@Tydus.org>
+#
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# QQDownload CLI program
+
+import qqdown
+import sys
+from optparse import OptionParser
+
+
+USAGE_STR='''
+%prog [options] operation [args]
+
+Operations:
+    lst
+        Get a List of download files
+
+    add <url> [<filename>]
+        Add a url for downloading
+
+    add_bt <filename>
+        Add a bt task from local torrent
+
+    add_bt_url <url>
+        Download torrent from url and add it
+
+    remove <task_id> [<task_id>...]
+        Del tasks
+
+    get_http <hash>
+        Get HTTP Download address and Cookie'''
+
+def lst(args):
+    print d.get_task_list()
+
+def add(args):
+    if len(args)==0:
+        raise ArgumentError("expect url")
+    print d.add_task(args[0])
+
+def add_bt(args):
+    if len(args)==0:
+        raise ArgumentError("expect filename")
+    print d.add_torrent(qqdown.get_torrent_from_file(args[0]))
+
+def add_bt_url(args):
+    if len(args)==0:
+        raise ArgumentError("expect url")
+    print d.add_torrent(qqdown.get_torrent_from_url(args[0]))
+
+def remove(args):
+    print d.del_task(args)
+
+def get_http(args):
+    print d.get_http_url(args[0])
+
+l_oper=dict(
+        lst=lst,
+        add=add,
+        add_bt=add_bt,
+        add_bt_url=add_bt_url,
+        remove=remove,
+        get_http=get_http,
+    )
+
+class ArgumentError(Exception): pass
+d=None
+
+def main():
+    global d
+
+    op=OptionParser(usage=USAGE_STR)
+    op.add_option('-c','--cookie',dest='cookie',help='cookie file')
+    op.add_option('-u','--user',dest='user',help='username')
+    op.add_option('-p','--pass',dest='password',help='password')
+    op.add_option('-P','--pass-md53',action='store_true',help='password hash using md5_3')
+    opt,arg=op.parse_args()
+
+    def fail(err):
+        print "Error: %s"%err
+        op.print_help()
+        exit(-1)
+
+    if(len(arg))==0:
+        fail("no operation")
+
+    try:
+        if not opt.cookie:
+            raise IOError()
+        file(opt.cookie).close()
+        d=qqdown.QQDown('','',nologin=True)
+        d.load_cookie(opt.cookie)
+
+    except IOError:
+        while d==None:
+            try:
+                if not opt.user:
+                    fail("no username")
+                if not opt.password:
+                    fail("no password")
+                d=qqdown.QQDown(opt.user,opt.password,opt.pass_md53)
+            except LoginError,e:
+                print e.message[1]
+                d=None
+
+    if opt.cookie:
+        d.save_cookie(opt.cookie)
+
+    try:
+        l_oper[arg[0]](arg[1:])
+    except KeyError:
+        fail("no such operation")
+    except ArgumentError,e:
+        fail(e.message)
+    except Exception,e:
+        fail(e.message)
+
+
+if __name__=="__main__":
+    main()
