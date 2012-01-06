@@ -2,12 +2,38 @@
 
 # Json RPC
 
-from common import *
+import urllib2
+from urllib import urlencode
 from urllib2 import Request
 from mimetypes import guess_type
 from cookielib import MozillaCookieJar
+from json import loads
+from re import sub
+
+class RPCError(Exception): pass
+
+class Entity(object):
+    def __init__(self,d={}):
+        self.__dict__['___']=d.copy()
+
+    def __getattr__(self,key):
+        if self.__dict__['___'].has_key(key):
+            return self.__dict__['___'][key]
+        return None
+
+    def __setattr__(self,key,value):
+        self.__dict__['___'][key]=value
+
+def recur_sub(pattern,repl,string):
+    ''' Recursively sub string until nothing changed '''
+    string2=""
+    while string2!=string:
+        string2=string
+        string=sub(pattern,repl,string2)
+    return string
 
 def multipart_encode(data,files):
+    ''' Encode a multipart/form-data packet '''
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
     CRLF = '\r\n'
     L = []

@@ -4,7 +4,7 @@
 
 import qqweb
 from bencode import bdecode
-from common import *
+from random import random
 
 XFJSON_URL="http://lixian.qq.com/handler/xfjson.php"
 

@@ -3,7 +3,17 @@
 # QQWeb interface
 
 import json_rpc
-from common import *
+from random import random
+
+class QQLoginException(Exception): pass
+
+def md5_3(a):
+    ''' Performs an 3-time MD5 (md5_3 as Tencent spec) '''
+    from hashlib import md5
+    from string import upper
+    a=md5(a).digest()
+    a=md5(a).digest()
+    return upper(md5(a).hexdigest())
 
 def prompt_for_verifycode(vc):
     from os import system
@@ -59,7 +69,7 @@ class QQWeb(json_rpc.Json_RPC):
                          )
         if ret[1]!='0':
             # Login Failed
-            raise LoginException(ret[5])
+            raise QQLoginException(ret[5])
 
     def __repr__(self):
         return "<qqweb.QQWeb object with user '%s'>"%self.username
