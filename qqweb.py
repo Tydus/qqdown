@@ -37,7 +37,7 @@ def prompt_for_verifycode(vc):
     fd.write(vc)
     fd.close()
     system("display "+fn)
-    return raw_input()
+    return raw_input('Input verifycode: ')
 
 class QQWeb(json_rpc.Json_RPC):
     def __init__(self,username,password,is_pass_md53=False,nologin=False):
