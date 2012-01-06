@@ -65,7 +65,7 @@ class Json_RPC(object):
         '''
         ret=self.http_rpc(url,method,**kwargs)
         ret=recur_sub(r'try{(.*)}catch\(.*\){.*};?',r'\1',ret)
-        ret=recur_sub(r'(\w+)\((.*)\);',r"['\1',\2]",ret)
+        ret=recur_sub(r'(\w+)\((.*)\);?',r"['\1',\2]",ret)
         ret=recur_sub(r"'",r'"',ret)
         ret=loads(ret)
         return ret
