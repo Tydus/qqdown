@@ -20,6 +20,7 @@
 import qqdown
 import sys
 from optparse import OptionParser
+from re import match
 
 
 USAGE_STR='''
@@ -44,29 +45,71 @@ Operations:
     get_http <hash>
         Get HTTP Download address and Cookie'''
 
+opt_verbosity=None
+
+def prompt(*args):
+    if opt_verbosity!=False:
+        for i in args:
+            print i,
+        print
+
+def verbose(*args):
+    if opt_verbosity==True:
+        for i in args:
+            print i,
+        print
+
 def lst(args):
-    print d.get_task_list()
+    res=d.get_task_list()
+    verbose(res)
+    def dot(x,l):
+        x=x.split('\\')[-1]
+        if len(x)<l:
+            return x
+        d=(l-3)/2
+        return x[:d]+'...'+x[-d:]
+
+    format_str="%19.19s %50.50s %4.4s %3.3s"
+    print format_str%('id','filename','%','day')
+    print format_str%tuple(['-'*80]*4)
+    for i in res:
+        print format_str%(
+                i['id'],
+                dot(i['file_name'],50),
+                100 if i['file_size']=='0' else (100*int(i['comp_size'])/int(i['file_size'])),
+                int(i['left_time'])/86400,
+                )
 
 def add(args):
-    if len(args)==0:
-        raise ArgumentError("expect url")
-    print d.add_task(args[0])
+    if len(args)!=1:
+        raise ArgumentError("expect one url")
+    verbose(d.add_task(args[0]))
+    prompt("%s added")
 
 def add_bt(args):
-    if len(args)==0:
-        raise ArgumentError("expect filename")
-    print d.add_torrent(qqdown.get_torrent_from_file(args[0]))
+    if len(args)!=1:
+        raise ArgumentError("expect one filename")
+    verbose(d.add_torrent(qqdown.get_torrent_from_file(args[0])))
+    prompt("torrent from %s added"%args[0])
 
 def add_bt_url(args):
-    if len(args)==0:
-        raise ArgumentError("expect url")
-    print d.add_torrent(qqdown.get_torrent_from_url(args[0]))
+    if len(args)!=1:
+        raise ArgumentError("expect one url")
+    verbose(d.add_torrent(qqdown.get_torrent_from_url(args[0])))
+    prompt("torrent from %s downloaded and added"%args[0])
 
 def remove(args):
-    print d.del_task(args)
+    if len(rags)==0:
+        raise ArgumentError("expect task ids")
+    verbose(d.del_task(args))
+    prompt("%s Removed"%','.join(args))
 
 def get_http(args):
-    print d.get_http_url(args[0])
+    if len(args)!=1 or not match(r'^[0-9A-F]{40}$',args[0]):
+        raise ArgumentError("expect only one hash")
+    ret=d.get_http_url(args[0])
+    print "URL: %s"%ret['url']
+    print "Cookie: %s"%ret['cookie']
 
 l_oper=dict(
         lst=lst,
@@ -78,17 +121,21 @@ l_oper=dict(
     )
 
 class ArgumentError(Exception): pass
+
 d=None
 
 def main():
-    global d
+    global d,opt_verbosity
 
     op=OptionParser(usage=USAGE_STR)
     op.add_option('-c','--cookie',dest='cookie',help='cookie file')
     op.add_option('-u','--user',dest='user',help='username')
     op.add_option('-p','--pass',dest='password',help='password')
     op.add_option('-P','--pass-md53',action='store_true',help='password hash using md5_3')
+    op.add_option('-q','--quiet',dest='verbosity',action='store_false',help='be quiet')
+    op.add_option('-v','--verbose',dest='verbosity',action='store_true',help='be verbose')
     opt,arg=op.parse_args()
+    opt_verbosity=opt.verbosity
 
     def fail(err):
         print "Error: %s"%err
