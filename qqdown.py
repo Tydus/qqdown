@@ -18,6 +18,7 @@
 # QQDownload network interface
 
 import qqweb
+from urllib2 import urlopen
 from bencode import bdecode
 from random import random
 
@@ -97,7 +98,6 @@ class QQDown(qqweb.QQWeb):
                 filesize=join_component(info_web['files'],'#','file_size_ori'),
                 filename=join_component(info_web['files'],'#','file_name').encode('utf-8'),
                 )
-
         return self.qqdown_rpc(XFJSON_URL,"POST",data=data)
 
 
@@ -107,11 +107,11 @@ class QQDown(qqweb.QQWeb):
 
         return a dict like:
         {'files': [{'file_index': 0,
-                    'file_name': 'tmp1/tmp2/b.txt',
+                    'file_name': 'tmp1\\\\tmp2\\\\b.txt',
                     'file_size': '0.01KB',
                     'file_size_ori': 7},
                    {'file_index': 1,
-                    'file_name': 'tmp1/a.txt',
+                    'file_name': 'tmp1\\\\a.txt',
                     'file_size': '0KB',
                     'file_size_ori': 0},
                    {'file_index': 2,
@@ -161,7 +161,7 @@ class QQDown(qqweb.QQWeb):
 
     def add_torrent(self,torrent):
         ''' Helper method to add all files in a torrent from a bytestring '''
-        self.add_bt_task(self.read_torrent(torrent))
+        return self.add_bt_task(self.read_torrent(torrent))
 
     def get_task_list(self):
         ''' Get List of task status '''
@@ -209,7 +209,7 @@ def get_torrent_from_file(filename):
 
 def get_torrent_from_url(url):
     ''' Helper method to get torrent bytestring from url '''
-    res=urllib2.urlopen(url)
+    res=urlopen(url)
     ret=res.read()
     res.close()
     return ret
