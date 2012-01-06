@@ -10,6 +10,25 @@ XFJSON_URL="http://lixian.qq.com/handler/xfjson.php"
 
 class QQDownException(Exception): pass
 
+error_desc={
+        '-10001':"HTTP Communication failed",
+        '-10005':"Empty Response",
+        '-10007':"XML Parsing Error",
+        '-10008':"Returning Data Malformed",
+        
+        '-11001':"Wrong Parameter",
+        '-11002':"Not Logged in",
+        '-11003':"Not VIP",
+        '-11004':"Checking for VIP failed",
+        '-11005':"Checking for VIP Level failed",
+        '-11006':"Get Task List failed",
+        '-11007':"Get Task Status failed",
+        '-11008':"Add Task failed",
+        '-11009':"Del Task failed",
+        '-11010':"",
+        '-11011':"Not Priviliged User",
+        }
+
 class QQDown(qqweb.QQWeb):
     def qqdown_rpc(self,url,method="GET",**kwargs):
         '''
@@ -27,12 +46,7 @@ class QQDown(qqweb.QQWeb):
         '''
         ret=self.json_rpc(url,method,**kwargs)[1]
         if ret['result']!=0:
-            if ret.has_key('errmsg'):
-                raise QQDownException(ret['errmsg'])
-            elif ret.has_key('err_msg'):
-                raise QQDownException(ret['err_msg'][0])
-            else:
-                raise QQDownException("Unknown Error")
+            raise QQDownException({'desc':error_desc[ret['result']],'raw':ret})
         return ret['data']
 
     def add_task(self,fileurl,filename="",filesize=0):
