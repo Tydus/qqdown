@@ -106,16 +106,18 @@ class QQDown(qqweb.QQWeb):
             raise QQDownException(info_web['msg'])
         del info_web['ret']
 
-        # Fix path based on local parse result
         l_local=info_local['files']
         l_web=info_web['files']
-        for i in xrange(len(l_web)):
-            if l_local[i]['length']!=l_web[i]['file_size_ori']:
-                raise Exception("File size mismatch, Program Error?!")
-            if l_local[i].has_key('path.utf-8'):
-                l_web[i]['file_name']=join(l_local[i]['path.utf-8'],'\\')
+
+        # Fix path based on local parse result
+        for i in l_web:
+            ind=i['file_index']
+            if l_local[ind].has_key('path.utf-8'):
+                i['file_name']='\\'.join(l_local[ind]['path.utf-8']).decode('utf-8')
+            elif info_local.has_key('encoding'):
+                i['file_name']='\\'.join(l_local[ind]['path']).decode(info_local['encoding'])
             else:
-                l_web[i]['file_name']=join(l_local[i]['path'],'\\')
+                i['file_name']='\\'.join(l_local[ind]['path']).decode('utf-8')
 
         return info_web
 
