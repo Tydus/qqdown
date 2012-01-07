@@ -19,6 +19,7 @@
 
 import qqdown
 import sys
+from qqweb import LoginError
 from optparse import OptionParser
 from re import match
 
