@@ -84,7 +84,7 @@ def add(args):
     if len(args)!=1:
         raise ArgumentError("expect one url")
     verbose(d.add_task(args[0]))
-    prompt("%s added")
+    prompt("%s added"%args[0])
 
 def add_bt(args):
     if len(args)!=1:
@@ -99,7 +99,7 @@ def add_bt_url(args):
     prompt("torrent from %s downloaded and added"%args[0])
 
 def remove(args):
-    if len(rags)==0:
+    if len(args)==0:
         raise ArgumentError("expect task ids")
     verbose(d.del_task(args))
     prompt("%s Removed"%','.join(args))
