@@ -104,12 +104,9 @@ class Json_RPC(object):
 
         '''
         ret=self.http_rpc(url,method,**kwargs)
-        open('a.txt','wb').write(ret)
         ret=recur_sub(r'try{(.*)}catch\(.*\){.*};?',r'\1',ret)
         ret=(search(r'{.+}',ret) or search(r'\[.+\]',ret)).group()
         #ret=sub(r"'",r'"',ret)
-
-        open('b.txt','wb').write(ret)
         ret=loads(ret)
         return ret
 
