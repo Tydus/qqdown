@@ -27,7 +27,7 @@ USAGE_STR='''
 %prog [options] operation [args]
 
 Operations:
-    lst
+    list,ls
         Get a List of download files
 
     add <url> [<filename>]
@@ -39,7 +39,7 @@ Operations:
     add_bt_url <url>
         Download torrent from url and add it
 
-    remove <task_id> [<task_id>...]
+    remove,rm <task_id> [<task_id>...]
         Del tasks
 
     get_http <hash>
@@ -112,10 +112,12 @@ def get_http(args):
     print "Cookie: %s"%ret['cookie']
 
 l_oper=dict(
-        lst=lst,
+        ls=lst,
+        list=lst,
         add=add,
         add_bt=add_bt,
         add_bt_url=add_bt_url,
+        rm=remove,
         remove=remove,
         get_http=get_http,
     )
