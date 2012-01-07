@@ -21,8 +21,9 @@ import json_rpc
 from random import random
 from hashlib import md5
 from string import upper
+from re import sub
 
-class QQLoginException(Exception): pass
+class LoginError(Exception): pass
 
 def md5_3(a):
     ''' Performs an 3-time MD5 (md5_3 as Tencent spec) '''
@@ -39,6 +40,13 @@ def prompt_for_verifycode(vc):
     system("display "+fn)
     return raw_input('Input verifycode: ')
 
+def func2list(x):
+    import pdb
+    pdb.set_trace()
+    x=sub(r'^try{(.+)}catch\(.*\){.*};?$',r'\1',x)
+    x=sub(r'^(\w+)\((.+)\);?',r"['\1',\2]",x)
+    return eval(x)
+
 class QQWeb(json_rpc.Json_RPC):
     def __init__(self,username,password,is_pass_md53=False,nologin=False):
         self.username=username
@@ -51,9 +59,9 @@ class QQWeb(json_rpc.Json_RPC):
         
         appid=567008010
         # Get Verify Code
-        ret=self.json_rpc("http://ptlogin2.qq.com/check",
-                          query=dict(uin=username,appid=appid,r=random())
-                         )
+        ret=func2list(self.http_rpc("http://ptlogin2.qq.com/check",
+                                    query=dict(uin=username,appid=appid,r=random())
+                                   ))
         verifycode=ret[2]
         if ret[1]=='1':
             ret=self.http_rpc("http://captcha.qq.com/getimage",
@@ -65,7 +73,8 @@ class QQWeb(json_rpc.Json_RPC):
             verifycode=prompt_for_verifycode(ret)
 
         password_md5=md5(password+verifycode.upper()).hexdigest()
-        ret=self.json_rpc("http://ptlogin2.qq.com/login",
+        ret=func2list(
+            self.http_rpc("http://ptlogin2.qq.com/login",
                           query=dict(u=username,
                                      p=password_md5,
                                      verifycode=verifycode,
@@ -81,9 +90,10 @@ class QQWeb(json_rpc.Json_RPC):
 #                                     action="2-13-237255",
                                     )
                          )
+            )
         if ret[1]!='0':
             # Login Failed
-            raise QQLoginException((ret[1],ret[5]))
+            raise LoginError((ret[1],ret[5]))
 
     def __repr__(self):
         return "<qqweb.QQWeb object with user '%s'>"%self.username

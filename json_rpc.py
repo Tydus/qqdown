@@ -39,14 +39,6 @@ class Entity(object):
     def __setattr__(self,key,value):
         self.__dict__['___'][key]=value
 
-def recur_sub(pattern,repl,string):
-    ''' Recursively sub string until nothing changed '''
-    string2=""
-    while string2!=string:
-        string2=string
-        string=sub(pattern,repl,string2)
-    return string
-
 def multipart_encode(data,files):
     ''' Encode a multipart/form-data packet '''
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
@@ -104,7 +96,7 @@ class Json_RPC(object):
 
         '''
         ret=self.http_rpc(url,method,**kwargs)
-        ret=recur_sub(r'try{(.*)}catch\(.*\){.*};?',r'\1',ret)
+        ret=sub(r'try{(.*)}catch\(.*\){.*};?',r'\1',ret)
         ret=(search(r'{.+}',ret) or search(r'\[.+\]',ret)).group()
         #ret=sub(r"'",r'"',ret)
         ret=loads(ret)
