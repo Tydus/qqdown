@@ -23,7 +23,7 @@ from urllib2 import Request
 from mimetypes import guess_type
 from cookielib import MozillaCookieJar
 from json import loads
-from re import sub
+from re import search,sub
 
 class RPCError(Exception): pass
 
@@ -93,21 +93,20 @@ class Json_RPC(object):
         '''
         Performs a json rpc to url and return python-native result
 
-        will remove try-catch statements, and
-        reorganize function calls to list
+        will extract dict or list from result
 
         Example:
-        try{callback({"result":0,"data":[]});}catch(e){}
+        try{callback({'result':0,'data':[]});}catch(e){}
         will be transcode to
-        ['callback',{'result':0,'data':[]}]
+        {"result":0,"data":[]}
 
         See also: http_rpc
 
         '''
         ret=self.http_rpc(url,method,**kwargs)
         ret=recur_sub(r'try{(.*)}catch\(.*\){.*};?',r'\1',ret)
-        ret=recur_sub(r'(\w+)\((.*)\);?',r"['\1',\2]",ret)
-        ret=recur_sub(r"'",r'"',ret)
+        ret=(search(r'{.+}',ret) or search(r'\[.+\]',ret)).group()
+        #ret=sub(r"'",r'"',ret)
         ret=loads(ret)
         return ret
 
