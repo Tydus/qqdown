@@ -60,7 +60,7 @@ class QQDown(qqweb.QQWeb):
         will be transcode to
         ['errcode':'0','result':0,'id':'1234567']
         '''
-        ret=self.json_rpc(url,method,**kwargs)[1]
+        ret=self.json_rpc(url,method,**kwargs)
         if ret.has_key('result') and ret['result']!=0:
             raise QQDownException({'desc':error_desc[ret['result']],'raw':ret})
         if ret.has_key('status') and ret['status']!=0:
