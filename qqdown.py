@@ -21,6 +21,7 @@ import qqweb
 from urllib2 import urlopen
 from bencode import bdecode
 from random import random
+from re import sub
 
 XFJSON_URL="http://lixian.qq.com/handler/xfjson.php"
 
@@ -108,6 +109,10 @@ class QQDown(qqweb.QQWeb):
         See also: read_torrent
 
         '''
+        # escape '#' to separate from delimeter
+        for i in info_web['files']:
+            i['file_name']=sub(r'#',r'%23',i['file_name'])
+
         data=dict(
                 cmd='add_bt_task',
                 r=random(),
