@@ -124,27 +124,20 @@ class Json_RPC(object):
 
         if method=='GET':
             request=Request(url)
+        elif kwe.file:
+            content_type,data=multipart_encode(kwe.data,kwe.file)
+            request=Request(url,data)
+            request.add_header('Content-Type', content_type)
+        elif kwe.data:
+            data=urlencode(kwe.data)
+            request=Request(url,data)
         else:
-            if not (kwe.data or kwe.file):
-                raise RPCError("POST with no data")
-
-            if kwe.file:
-                content_type,data=multipart_encode(kwe.data,kwe.file)
-                request=Request(url,data)
-                request.add_header('Content-Type', content_type)
-            else:
-                data=urlencode(kwe.data)
-                request=Request(url,data)
+            raise RPCError("POST with no data")
 
         request.add_header('User-Agent',
             "Mozilla/5.0 (Ubuntu; X11; Linux x86_64; rv:8.0) Gecko/20100101 Firefox/8.0"
             )
         request.add_header('Accept-Charset',"UTF-8")
-        '''
-        request.add_header('Referer',
-            "http://ui.ptlogin2.qq.com/cgi-bin/login?uin=&appid=567008010&f_url=loginerroralert&hide_title_bar=1&style=1&s_url=http%3A//lixian.qq.com/main.html&lang=0&enable_qlogin=1&css=http%3A//imgcache.qq.com/ptcss/r1/txyjy/567008010/login_mode_new.css%3F"
-            )
-        '''
 
         response=self.opener.open(request)
         ret=response.read()
