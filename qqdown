@@ -46,8 +46,11 @@ Operations:
     remove,rm <task_id> [<task_id>...]
         Del tasks
 
-    get_http <hash>
-        Get HTTP Download address and Cookie'''
+    get_http <hash> [axel|wget|curl]
+        Get HTTP Download address and Cookie
+        Sample: "`qqdown get_http <xxx> wget`"
+            will get http address in wget format and issue wget to download it
+'''
 
 opt_verbosity=None
 
@@ -121,11 +124,16 @@ def remove(args):
     prompt("%s Removed"%','.join(args))
 
 def get_http(args):
-    if len(args)!=1 or not match(r'^[0-9A-F]{40}$',args[0]):
+    if len(args)<1 or not match(r'^[0-9A-F]{40}$',args[0]):
         raise ArgumentError("expect only one hash")
     ret=d.get_http_url(args[0])
-    print "URL: %s"%ret['url']
-    print "Cookie: %s"%ret['cookie']
+    verbose(ret)
+    format="default" if len(args)==1 else args[1]
+    print {
+        'axel':"axel --header='Cookie: FTN5K=%s' %s",
+        'curl':"curl -b FTN5K=%s %s",
+        'wget':"wget --no-cookies --trust-server-names --header='Cookie: FTN5K=%s' %s",
+    }.get(format,"Cookie: %s  URL: %s")%(ret['cookie'],ret['url'])
 
 l_oper=dict(
         ls=lst,
