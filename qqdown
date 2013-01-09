@@ -96,7 +96,7 @@ def lst_hash(args):
     verbose(res)
     print_table("%38.38s %40.40s",
             ('filename','hash'),
-            (lambda i:dot(i['file_name'],58), lambda i:i.get('hash')),
+            (lambda i:dot(i['file_name'],38), lambda i:i.get('hash','N/A')),
             res)
 
 def add(args):
