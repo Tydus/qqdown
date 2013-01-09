@@ -195,10 +195,10 @@ def main():
     if opt.cookie:
         d.save_cookie(opt.cookie)
 
+    if not l_oper.has_key(arg[0]):
+        fail("no such operation")
     try:
         l_oper[arg[0]](arg[1:])
-    except KeyError:
-        fail("no such operation")
     except ArgumentError,e:
         fail(e.message)
     except Exception,e:
