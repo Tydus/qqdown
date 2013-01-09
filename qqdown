@@ -31,6 +31,9 @@ Operations:
     list,ls
         Get a List of download files
 
+    list_hash,lh
+        Get a List of download files
+
     add <url> [<filename>]
         Add a url for downloading
 
@@ -60,26 +63,38 @@ def verbose(*args):
             print i,
         print
 
+def dot(x,l):
+    x=x.split('\\')[-1]
+    if len(x)<l:
+        return x
+    d=(l-3)/2
+    return x[:d]+'...'+x[-d:]
+
+def print_table(format_str,prompt,functions,data):
+    print format_str%(prompt)
+    print format_str%tuple(['-'*80]*len(prompt))
+    for i in data:
+        print format_str%tuple(map(lambda x:x(i),functions))
+
 def lst(args):
     res=d.get_task_list()
     verbose(res)
-    def dot(x,l):
-        x=x.split('\\')[-1]
-        if len(x)<l:
-            return x
-        d=(l-3)/2
-        return x[:d]+'...'+x[-d:]
+    print_table("%70.70s %4.4s %3.3s",
+            ('filename','%','day'),
+            (
+                lambda i: dot(i['file_name'],50),
+                lambda i: 100 if i['file_size']=='0' else (100*int(i['comp_size'])/int(i['file_size'])),
+                lambda i: int(i['left_time'])/86400,
+            ),
+            res)
 
-    format_str="%19.19s %50.50s %4.4s %3.3s"
-    print format_str%('id','filename','%','day')
-    print format_str%tuple(['-'*80]*4)
-    for i in res:
-        print format_str%(
-                i['id'],
-                dot(i['file_name'],50),
-                100 if i['file_size']=='0' else (100*int(i['comp_size'])/int(i['file_size'])),
-                int(i['left_time'])/86400,
-                )
+def lst_hash(args):
+    res=d.get_task_list()
+    verbose(res)
+    print_table("%38.38s %40.40s",
+            ('filename','hash'),
+            (lambda i:dot(i['file_name'],58), lambda i:i.get('hash')),
+            res)
 
 def add(args):
     if len(args)!=1:
@@ -115,6 +130,8 @@ def get_http(args):
 l_oper=dict(
         ls=lst,
         list=lst,
+        list_hash=lst_hash,
+        lh=lst_hash,
         add=add,
         add_bt=add_bt,
         add_bt_url=add_bt_url,
